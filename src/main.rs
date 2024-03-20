@@ -13,6 +13,12 @@ fn main() -> Result<(), anyhow::Error>
     println!("Input device: {}", device.name()?);
 
     let config = device.default_input_config()?;
+    // let config = cpal::SupportedStreamConfig {
+    //     channels: 2,
+    //     sample_rate: cpal::SampleRate(16000),
+    //     buffer_size: cpal::BufferSize::Fixed(512),
+    //     sample_format: cpal::SampleFormat::F32,
+    // };
     println!("Default input config: {:?}", config);
 
     // Channel for transferring samples from callback to main thread
@@ -34,7 +40,7 @@ fn main() -> Result<(), anyhow::Error>
     stream.play()?;
 
     let mut recorded_samples: Vec<f32> = Vec::new();
-    let record_time = std::time::Duration::from_secs(5);  // Record for 5 seconds
+    let record_time = std::time::Duration::from_secs(20);  // Record for 5 seconds
     let start_time = std::time::Instant::now();
 
     // Recording loop
@@ -42,7 +48,6 @@ fn main() -> Result<(), anyhow::Error>
         if let Ok(data) = receiver.try_recv() {
             recorded_samples.extend_from_slice(&data);
         }
-        std::thread::sleep(std::time::Duration::from_millis(100));  // Sleep to reduce busy waiting
     }
 
     println!("Recorded samples count: {}", recorded_samples.len());
@@ -53,7 +58,7 @@ fn main() -> Result<(), anyhow::Error>
     // Saving the recorded data
     let spec = hound::WavSpec {
         channels: config.channels(),
-        sample_rate: 16000,
+        sample_rate: config.sample_rate().0,
         bits_per_sample: 32,
         sample_format: SampleFormat::Float,
     };
