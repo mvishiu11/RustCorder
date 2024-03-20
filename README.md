@@ -26,14 +26,14 @@ So why wait? Start recording with RustCorder today!
 
 To build the project, you can use the following command:
 
-\```sh
+```sh
 cargo build
-\```
+```
 
 And to run it:
 
-\```sh
+```sh
 cargo run
-\```
+```
 
 Happy recording!
